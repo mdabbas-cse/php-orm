@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Fluid\Orm\DataMapper;
@@ -79,11 +80,5 @@ interface DataMapperInterface
    */
   public function getLastId(): int;
 
-  /**
-   * Returns the number of rows affected by the last SQL statement
-   * 
-   * @return int
-   */
-  public function getAffectedRows(): int;
 
 }

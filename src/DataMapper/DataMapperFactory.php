@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fluid\Orm\DataMapper;
 
 use Fluid\Orm\DataMapper\Exceptions\DataMapperException;
@@ -39,7 +41,4 @@ class DataMapperFactory
     }
     return new DataMapper($databaseConnectionObject);
   }
-
-
-
 }

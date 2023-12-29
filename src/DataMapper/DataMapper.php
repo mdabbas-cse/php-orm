@@ -33,7 +33,7 @@ class DataMapper implements DataMapperInterface
   }
 
   /**
-   * Check the incoming $valis isn't empty else throw an exception
+   * Check the incoming $value isn't empty else throw an exception
    * 
    * @param mixed $value
    * @param string|null $errorMessage
@@ -61,6 +61,7 @@ class DataMapper implements DataMapperInterface
    */
   public function prepare($sql): self
   {
+    $this->isEmpty($sql, 'The prepare method expects a string as an argument');
     $this->stmt = $this->db->open()->prepare($sql);
     return $this;
   }
@@ -215,6 +216,5 @@ class DataMapper implements DataMapperInterface
       throw $exception;
     }
   }
-
 
 }

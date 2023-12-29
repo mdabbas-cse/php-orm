@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fluid\Orm\DataMapper;
 
 interface DataMapperEnvironmentConfigurationInterface
