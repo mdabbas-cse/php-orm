@@ -1,6 +1,6 @@
 <?php
 
-class DataMapperFactory
+class DataMapperFactory2
 {
 
   /**
