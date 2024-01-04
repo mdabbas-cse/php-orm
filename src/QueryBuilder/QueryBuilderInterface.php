@@ -5,12 +5,55 @@ namespace Fluid\Orm\QueryBuilder;
 
 interface QueryBuilderInterface
 {
+  /**
+   * Data insert query string
+   * 
+   * @return string
+   */
   public function insertQuery(): string;
+
+  /**
+   * Data select query string
+   * 
+   * @return string
+   */
   public function selectQuery(): string;
+
+  /**
+   * Data update query string
+   * 
+   * @return string
+   */
   public function updateQuery(): string;
+
+  /**
+   * Data delete query string
+   * 
+   * @return string
+   */
   public function deleteQuery(): string;
 
+  /**
+   * Data raw query string
+   * 
+   * @return string
+   */
   public function rowQuery(): string;
+
+  /**
+   * Data raw query string
+   * 
+   * @return string
+   */
+  public function orderByQuery(): string;
+
+  /**
+   * Data raw query string
+   * 
+   * @return string
+   */
+  public function queryOffset(): string;
+
   // public function truncateQuery(): string;
   // public function dropQuery(): string;
   // public function whereQuery(): string;

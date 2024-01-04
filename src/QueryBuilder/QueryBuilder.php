@@ -31,7 +31,7 @@ class QueryBuilder implements QueryBuilderInterface
     'primary_key' => '',
     'table' => '',
     'type' => '',
-    'raw' => '',
+    'row' => '',
     'table_join' => '',
     'join_key' => '',
     'join' => []
@@ -45,7 +45,7 @@ class QueryBuilder implements QueryBuilderInterface
     'insert',
     'update',
     'delete',
-    'raw'
+    'row'
   ];
 
   /**
@@ -128,28 +128,6 @@ class QueryBuilder implements QueryBuilderInterface
     $this->sql = "SELECT {$selectors} FROM {$this->keys['table']}";
     $this->sql .= $this->hasConditions();
     return $this->sql;
-    // $this->sql = "SELECT ";
-    // if ($this->keys['distinct']) {
-    //   $this->sql .= "DISTINCT ";
-    // }
-    // if (is_array($this->keys['selectors']) && count($this->keys['selectors']) > 0) {
-    //   $this->sql .= implode(', ', $this->keys['selectors']);
-    // } else {
-    //   $this->sql .= '*';
-    // }
-    // $this->sql .= " FROM {$this->keys['table']}";
-    // if (is_array($this->keys['join']) && count($this->keys['join']) > 0) {
-    //   $this->sql .= " {$this->keys['table_join']} ON {$this->keys['join_key']}";
-    // }
-    // if (is_array($this->keys['conditions']) && count($this->keys['conditions']) > 0) {
-    //   $this->sql .= " WHERE ";
-    //   $this->sql .= implode(' ', $this->keys['conditions']);
-    // }
-    // if (is_array($this->keys['orderby']) && count($this->keys['orderby']) > 0) {
-    //   $this->sql .= " ORDER BY ";
-    //   $this->sql .= implode(', ', $this->keys['orderby']);
-    // }
-    // return $this->sql;
   }
 
   /**
@@ -181,4 +159,91 @@ class QueryBuilder implements QueryBuilderInterface
     return '';
   }
 
+  /**
+   * @inheritDoc
+   *
+   * @return string
+   */
+  public function deleteQuery(): string
+  {
+    if ($this->isValidQueryType('delete')) {
+      $index = array_keys($this->keys['conditions']);
+      $this->sql = "DELETE FROM {$this->keys['table']} WHERE {$index[0]} = :{$index[0]} LIMIT 1";
+      $bulkDelete = array_values($this->keys['fields']);
+      if (is_array($bulkDelete) && count($bulkDelete) > 1) {
+        for ($i = 0; $i < count($bulkDelete); $i++) {
+          $this->sql = "DELETE FROM {$this->keys['table']} WHERE {$index[0]} = :{$index[0]}";
+        }
+      }
+
+      return $this->sql;
+    }
+    return '';
+  }
+
+  private function hasConditions()
+  {
+    if (isset($this->keys['conditions']) && $this->keys['conditions'] != '') {
+      if (is_array($this->keys['conditions'])) {
+        $sort = [];
+        foreach (array_keys($this->keys['conditions']) as $where) {
+          if (isset($where) && $where != '') {
+            $sort[] = $where . " = :" . $where;
+          }
+        }
+        if (count($this->keys['conditions']) > 0) {
+          $this->sql .= " WHERE " . implode(" AND ", $sort);
+        }
+      }
+    } else if (empty($this->keys['conditions'])) {
+      $this->sql = " WHERE 1";
+    }
+    $this->sql .= $this->orderByQuery();
+    $this->sql .= $this->queryOffset();
+
+    return $this->sql;
+  }
+
+  /**
+   * @inheritDoc
+   *
+   * @return string
+   */
+  public function rowQuery(): string
+  {
+    $this->isValidQueryType('row');
+    if (isset($this->keys['row']) && $this->keys['row'] != '') {
+      return $this->keys['row'];
+    }
+    return '';
+  }
+
+  /**
+   * @inheritDoc
+   *
+   * @return string
+   */
+  public function orderByQuery(): string
+  {
+    $sql = '';
+    if (is_array($this->keys['orderby']) && count($this->keys['orderby']) > 0) {
+      $sql .= " ORDER BY ";
+      $sql .= implode(', ', $this->keys['orderby']);
+      return $sql;
+    }
+    return $this->sql;
+  }
+
+  /**
+   * @inheritDoc
+   *
+   * @return string
+   */
+  public function queryOffset(): string
+  {
+    if (isset($this->keys['offset']) && $this->keys['offset'] !== '') {
+      return " OFFSET {$this->keys['offset']}";
+    }
+    return $this->sql;
+  }
 }
