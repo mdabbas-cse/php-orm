@@ -180,6 +180,7 @@ class Crud implements CrudInterface
    */
   public function search(array $selectors = [], array $conditions = []): ?array
   {
+    // TODO: maybe an error here
     try {
       $args = [
         'table' => $this->getSchema(),
