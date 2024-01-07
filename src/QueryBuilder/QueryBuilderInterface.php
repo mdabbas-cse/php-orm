@@ -6,6 +6,21 @@ namespace Fluid\Orm\QueryBuilder;
 interface QueryBuilderInterface
 {
   /**
+   * Main constructor class
+   * 
+   * @return void
+   */
+  public function __construct();
+
+  /**
+   * Build query string
+   * 
+   * @param array $arg
+   * @return QueryBuilderInterface
+   */
+  public function buildQuery(array $arg): QueryBuilderInterface;
+
+  /**
    * Data insert query string
    * 
    * @return string
@@ -38,7 +53,7 @@ interface QueryBuilderInterface
    * 
    * @return string
    */
-  public function rowQuery(): string;
+  public function rawQuery(): string;
 
   /**
    * Data raw query string
@@ -53,6 +68,14 @@ interface QueryBuilderInterface
    * @return string
    */
   public function queryOffset(): string;
+
+  /**
+   * Data Search query string
+   * 
+   * @return string
+   */
+  public function searchQuery(): string;
+
 
   // public function truncateQuery(): string;
   // public function dropQuery(): string;

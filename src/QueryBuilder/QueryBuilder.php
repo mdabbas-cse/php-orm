@@ -31,7 +31,7 @@ class QueryBuilder implements QueryBuilderInterface
     'primary_key' => '',
     'table' => '',
     'type' => '',
-    'row' => '',
+    'raw' => '',
     'table_join' => '',
     'join_key' => '',
     'join' => []
@@ -45,7 +45,8 @@ class QueryBuilder implements QueryBuilderInterface
     'insert',
     'update',
     'delete',
-    'row'
+    'row',
+    'search'
   ];
 
   /**
@@ -209,11 +210,12 @@ class QueryBuilder implements QueryBuilderInterface
    *
    * @return string
    */
-  public function rowQuery(): string
+  public function rawQuery(): string
   {
-    $this->isValidQueryType('row');
-    if (isset($this->keys['row']) && $this->keys['row'] != '') {
-      return $this->keys['row'];
+    if ($this->isValidQueryType('raw')) {
+      $this->sql = $this->keys['raw'];
+
+      return $this->sql;
     }
     return '';
   }
@@ -245,5 +247,38 @@ class QueryBuilder implements QueryBuilderInterface
       return " OFFSET {$this->keys['offset']}";
     }
     return $this->sql;
+  }
+
+  public function searchQuery(): string
+  {
+    if ($this->isValidQueryType('search ')) {
+      if (is_array($this->keys['selectors']) && $this->keys['selectors'] != '') {
+        $this->sql = "SELECT * FROM {$this->keys['table']} WHERE ";
+        if ($this->has('selectors')) {
+          $values = [];
+          foreach ($this->keys['selectors'] as $selector) {
+            $values[] = $selector . " LIKE " . "{$selector}";
+          }
+          if (count($this->keys['selectors']) >= 1) {
+            $this->sql .= implode(" OR ", $values);
+          }
+        }
+        //$this->sql .= $this->orderByQuery();
+        //$this->sql .= $this->queryOffset();
+      }
+      return $this->sql;
+    }
+    return '';
+  }
+
+  /**
+   * Checks whether a key is set. returns true or false if not set
+   * 
+   * @param string $key
+   * @return bool
+   */
+  protected function has(string $key): bool
+  {
+    return isset($this->keys[$key]);
   }
 }
