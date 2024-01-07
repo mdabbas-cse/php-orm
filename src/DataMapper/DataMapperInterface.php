@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fluid\Orm\DataMapper;
 
-use PDOStatement;
 use Throwable;
 
 interface DataMapperInterface
@@ -33,9 +32,9 @@ interface DataMapperInterface
    * 
    * @param array $fields
    * @param bool $isSearch
-   * @return mixed
+   * @return DataMapperInterface | bool
    */
-  public function bindParameters(array $fields, bool $isSearch = false): self;
+  public function bindParameters(array $fields, bool $isSearch = false): DataMapperInterface|bool;
 
   /**
    * returns the number of rows affected by a DELETE, INSERT, or UPDATE statement.
@@ -80,5 +79,22 @@ interface DataMapperInterface
    */
   public function getLastId(): int;
 
+  /**
+   * Returns the query condition merged with the query parameters
+   * 
+   * @param array $conditions
+   * @param array $parameters
+   * @return array
+   */
+  public function buildQueryParameters(array $conditions = [], array $parameters = []): array;
 
+  /**
+   * Persist queries to database
+   * 
+   * @param string $query
+   * @param array $parameters
+   * @return mixed
+   * @throws Throwable
+   */
+  public function persist(string $sqlQuery, array $parameters): mixed;
 }

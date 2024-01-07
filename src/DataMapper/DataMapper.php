@@ -116,9 +116,9 @@ class DataMapper implements DataMapperInterface
    * 
    * @param array $fields
    * @param bool $isSearch
-   * @return self
+   * @return DataMapperInterface | bool
    */
-  public function bindParameters(array $fields, bool $isSearch = false): self
+  public function bindParameters(array $fields, bool $isSearch = false): DataMapperInterface|bool
   {
     $this->isArray($fields);
     if (is_array($fields)) {
@@ -214,6 +214,35 @@ class DataMapper implements DataMapperInterface
       }
     } catch (Throwable $exception) {
       throw $exception;
+    }
+  }
+
+  /**
+   * Returns the query condition merged with the query parameters
+   * 
+   * @param array $conditions
+   * @param array $parameters
+   * @return array
+   */
+  public function buildQueryParameters(array $conditions = [], array $parameters = []): array
+  {
+    return (!empty($parameters) || (!empty($conditions)) ? array_merge($conditions, $parameters) : $parameters);
+  }
+
+  /**
+   * Persist queries to database
+   * 
+   * @param string $query
+   * @param array $parameters
+   * @return mixed
+   * @throws Throwable
+   */
+  public function persist(string $sqlQuery, array $parameters)
+  {
+    try {
+      return $this->prepare($sqlQuery)->bindParameters($parameters)->execute();
+    } catch (Throwable $throwable) {
+      throw $throwable;
     }
   }
 
